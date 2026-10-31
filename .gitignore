@@ -4,3 +4,11 @@ dist
 
 # Local reference document, excluded from publication
 *.docx
+
+.vercel/
+
+.env
+
+.env.*
+.vercel
+.env*

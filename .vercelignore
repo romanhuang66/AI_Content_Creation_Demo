@@ -1,0 +1,10 @@
+.git
+.openai
+node_modules
+dist
+*.docx
+.DS_Store
+
+.env
+
+.env.*
