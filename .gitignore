@@ -12,3 +12,6 @@ dist
 .env.*
 .vercel
 .env*
+
+# Generated static deployment archives
+artifacts/

@@ -14,12 +14,12 @@ function App(){
  const [generatingMedia,setGeneratingMedia]=useState(false),[galleryBrief,setGalleryBrief]=useState(''),[storyInfo,setStoryInfo]=useState({title:'',note:''});
  const [focus,setFocus]=useState(''),[heroId,setHeroId]=useState(null),[direction,setDirection]=useState('diary'),[reviewed,setReviewed]=useState(false);
  const mediaRef=useRef(media), hashCache=useRef(new Map());
- const timedScenes=withTiming(scenes), totalDuration=timedScenes.at(-1)?.range[1]||duration;
+ const timedScenes=withTiming(scenes), totalDuration=timedScenes[timedScenes.length-1]?.range[1]||duration;
  const selectedMedia=media.filter(m=>selectedIds.includes(m.id));
- const uncertainMedia=selectedMedia.at(-1)||mediaSeed[5];
+ const uncertainMedia=selectedMedia[selectedMedia.length-1]||mediaSeed[5];
  const locked=busy!==null||editing!==null;
  const commitScenes=(next,nextInfo=storyInfo,nextDirection=direction)=>{setHistory(h=>[...h.slice(-19),{scenes,confidence,storyInfo,direction}]);setScenes(next);setStoryInfo(nextInfo);setDirection(nextDirection)};
- const undo=()=>{const previous=history.at(-1);if(!previous)return;setScenes(previous.scenes);setConfidence(previous.confidence);setStoryInfo(previous.storyInfo||storyInfo);setDirection(previous.direction||direction);setHistory(h=>h.slice(0,-1));setToast('已撤销最近一次分镜修改')};
+ const undo=()=>{const previous=history[history.length-1];if(!previous)return;setScenes(previous.scenes);setConfidence(previous.confidence);setStoryInfo(previous.storyInfo||storyInfo);setDirection(previous.direction||direction);setHistory(h=>h.slice(0,-1));setToast('已撤销最近一次分镜修改')};
  const selectMedia=id=>setSelectedIds(ids=>ids.includes(id)?ids:[...ids,id]);
  const toggleMedia=id=>setSelectedIds(ids=>ids.includes(id)?ids.filter(x=>x!==id):[...ids,id]);
  const dropMedia=e=>{e.preventDefault();setDrag(false);const raw=e.dataTransfer.getData('application/x-frameflow-media');const id=mediaRef.current.find(m=>String(m.id)===raw)?.id;if(id!==undefined){selectMedia(id);setToast('素材已选中，可在上方已选区域查看');return}if(e.dataTransfer.files.length)addFiles(e.dataTransfer.files);else setToast('请拖入素材库卡片或本地图片、视频文件')};
@@ -102,7 +102,7 @@ function App(){
  const update=(id,patch)=>commitScenes(scenes.map(x=>x.id===id?{...x,...patch}:x));
  const regen=id=>{if(scenes.find(s=>s.id===id)?.protected){setToast('这幕已锁定，请先解锁');return}setBusy(id);later(()=>{commitScenes(scenes.map(x=>x.id===id?{...x,script:x.alt,alt:x.script}:x));setBusy(null);setToast('当前分镜已重新生成，其他分镜保持不变')},950)};
  const range=s=>timedScenes.find(x=>x.id===s.id).range;
- const active=timedScenes.find(s=>time<s.range[1])||timedScenes.at(-1);
+ const active=timedScenes.find(s=>time<s.range[1])||timedScenes[timedScenes.length-1];
  const previewScene=s=>{setTime(range(s)[0]);setPlaying(false);go('preview')};
  const getMedia=id=>media.find(m=>m.id===id)||media[0];
  const thumb=(m,cls='')=>!m?<span className="muted">暂无素材</span>:m.video?<video className={cls} src={m.image} muted playsInline/>:<img className={cls} src={m.image} alt={m.name} style={{objectPosition:m.position}} onError={e=>{e.currentTarget.onerror=null;e.currentTarget.src='/media/themes/nature.jpg'}}/>;
