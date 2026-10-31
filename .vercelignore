@@ -8,3 +8,6 @@ dist
 .env
 
 .env.*
+
+# Local user test photo is selected through the browser, not published
+/咖啡馆素材1.png

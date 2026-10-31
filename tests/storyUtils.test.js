@@ -26,3 +26,11 @@ test('file deduplication uses content independent of filename',async()=>{
  assert.notEqual(await contentKey(bytes),await contentKey(new TextEncoder().encode('other photo')));
 });
 test('duration display handles minutes',()=>assert.equal(formatTime(65),'01:05'));
+test('regression: all selected uploads and generated assets appear in storyboard',()=>{
+ for(const ids of [[1,2,3,6,'upload-snow'],['upload-only'],Array.from({length:13},(_,i)=>`upload-${i}`)]){
+  const scenes=createScenes(sceneSeed,30,ids);
+  assert.deepEqual(new Set(scenes.flatMap(s=>s.media)),new Set(ids));
+  assert.equal(scenes.length,5);
+ }
+ assert.deepEqual(createScenes(sceneSeed,30,[]),[]);
+});

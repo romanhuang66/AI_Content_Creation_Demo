@@ -16,12 +16,15 @@ export function moveScene(scenes, id, direction) {
   return next;
 }
 export function createScenes(seed, duration, selectedIds) {
-  return seed.map((scene, index) => ({
+  const ids=[...new Set(selectedIds)];
+  if(!ids.length||!seed.length)return [];
+  // Every selected asset gets a slot. Extras share scenes rather than disappearing.
+  const buckets=seed.map(()=>[]);
+  ids.forEach((id,index)=>buckets[index % seed.length].push(id));
+  return seed.map((scene,index)=>({
     ...scene,
-    seconds: Math.round(scene.range[1] * duration / 30) - Math.round(scene.range[0] * duration / 30),
-    media: scene.media.filter(id => selectedIds.includes(id)).length
-      ? scene.media.filter(id => selectedIds.includes(id))
-      : [selectedIds[index % selectedIds.length]],
+    seconds: Math.round(scene.range[1]*duration/30)-Math.round(scene.range[0]*duration/30),
+    media: buckets[index].length?buckets[index]:[ids[index % ids.length]],
   }));
 }
 export async function contentKey(bytes) {
